@@ -49,7 +49,6 @@
 #define _SSE_SWIZZLE_H_
 #include "msvccompat.h"
 #include <emmintrin.h>
-#ifdef __SSE2__
 static INLINE __m128  _mm_swizzle_ps_xxxx(__m128 reg)      {  return CAST__M128(_mm_shuffle_epi32(CAST__M128I(reg), 0x00)); }
 static INLINE __m128  _mm_swizzle_ps_xxxy(__m128 reg)      {  return CAST__M128(_mm_shuffle_epi32(CAST__M128I(reg), 0x40)); }
 static INLINE __m128  _mm_swizzle_ps_xxxz(__m128 reg)      {  return CAST__M128(_mm_shuffle_epi32(CAST__M128I(reg), 0x80)); }
@@ -562,5 +561,4 @@ static INLINE __m128  _mm_shuffle_ps_wwwx(__m128 r1, __m128 r2)      {  return _
 static INLINE __m128  _mm_shuffle_ps_wwwy(__m128 r1, __m128 r2)      {  return _mm_shuffle_ps(r1,r2,0x7F); }
 static INLINE __m128  _mm_shuffle_ps_wwwz(__m128 r1, __m128 r2)      {  return _mm_shuffle_ps(r1,r2,0xBF); }
 static INLINE __m128  _mm_shuffle_ps_wwww(__m128 r1, __m128 r2)      {  return _mm_shuffle_ps(r1,r2,0xFF); }
-#endif
 #endif
