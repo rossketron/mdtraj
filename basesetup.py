@@ -50,9 +50,12 @@ class CompilerDetection(object):
             self.openmp_enabled, openmp_needs_gomp = self._detect_openmp()
         self.sse3_enabled = self._detect_sse3() if not self.msvc else True
         self.sse41_enabled = self._detect_sse41() if not self.msvc else True
-        self.neon_enabled = self._detect_neon() if not self.msvc else False        
+        self.neon_enabled = self._detect_neon() if not self.msvc else False
 
-        self.compiler_args_sse2 = ['-msse2'] if not self.msvc else ['/arch:SSE2']
+        # -DNO_WARN_X86_INTRINSICS only compatible with gcc version >= 8.0 and IBM Advanced Toolchain version >= 11.0
+        # This is a direct conversions to allow x86 SSE calls to be ported to openPower Vector Intrinsics
+        # reference: https://developer.ibm.com/tutorials/migrate-app-on-lop/?_ga=2.38728486.485083667.1620858815-1927233392.1620858815&cm_mc_uid=79453381708616208588147&cm_mc_sid_50200000=72302701620930882541
+        self.compiler_args_sse2 = ['-DNO_WARN_X86_INTRINSICS -fsigned-char -msse2'] if not self.msvc else ['/arch:SSE2']
         self.compiler_args_sse3 = ['-mssse3'] if (self.sse3_enabled and not self.msvc) else []
         self.compiler_args_neon = []
         self.compiler_args_warn = ['-Wno-unused-function', '-Wno-unreachable-code', '-Wno-sign-compare'] if not self.msvc else []
