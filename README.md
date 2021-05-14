@@ -1,4 +1,4 @@
-## This copy is modified for installation onto IBM Power Systems and contains cppflags specific to this architecture
+## This copy is modified for installation onto IBM Power Systems and contains cppflags specific to this architecture.</br></br>Requires gcc 8.0 or newer
 
 ## MDTraj: a modern, open library for the analysis of molecular dynamics trajectories
 
