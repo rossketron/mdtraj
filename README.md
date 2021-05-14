@@ -1,4 +1,7 @@
+## This copy is modified for installation onto IBM Power Systems and contains cppflags specific to this architecture
+
 ## MDTraj: a modern, open library for the analysis of molecular dynamics trajectories
+
 
 [![Build Status](https://github.com/mdtraj/mdtraj/actions/workflows/main.yaml/badge.svg)](https://github.com/mdtraj/mdtraj/actions)
 [![PyPI Version](https://badge.fury.io/py/mdtraj.svg)](https://pypi.python.org/pypi/mdtraj)
