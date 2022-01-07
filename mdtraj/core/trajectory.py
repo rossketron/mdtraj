@@ -90,10 +90,10 @@ def _assert_files_exist(filenames):
 
     Parameters
     ----------
-    filenames : {str, [str]}
-        String or list of strings to check
+    filenames : {path-like, [path-like]}
+        Path or list of paths to check
     """
-    if isinstance(filenames, string_types):
+    if isinstance(filenames, (string_types, os.PathLike)):
         filenames = [filenames]
     for fn in filenames:
         if not (os.path.exists(fn) and os.path.isfile(fn)):
@@ -105,10 +105,10 @@ def _assert_files_or_dirs_exist(names):
 
     Parameters
     ----------
-    filenames : {str, [str]}
-        String or list of strings to check
+    filenames : {path-like, [path-like]}
+        Path or list of paths to check
     """
-    if isinstance(names, string_types):
+    if isinstance(names, (string_types, os.PathLike)):
         names = [names]
     for fn in names:
         if not (os.path.exists(fn) and \
@@ -139,7 +139,7 @@ def load_topology(filename, **kwargs):
 
     Parameters
     ----------
-    filename : str
+    filename : path-like
         Path to a file containing a system topology. The following extensions
         are supported: '.pdb', '.pdb.gz', '.h5','.lh5', '.prmtop', '.parm7',
             '.prm7', '.psf', '.mol2', '.hoomdxml', '.gsd'
@@ -161,33 +161,33 @@ def _parse_topology(top, **kwargs):
     topology : md.Topology
     """
 
-    if isinstance(top, string_types):
+    if isinstance(top, (string_types, os.PathLike)):
         ext = _get_extension(top)
     else:
         ext = None  # might not be a string
 
-    if isinstance(top, string_types) and (ext in ['.pdb', '.pdb.gz', '.h5','.lh5']):
-        _traj = load_frame(top, 0, **kwargs)
-        topology = _traj.topology
-    elif isinstance(top, string_types) and (ext in ['.prmtop', '.parm7', '.prm7']):
-        topology = load_prmtop(top, **kwargs)
-    elif isinstance(top, string_types) and (ext in ['.psf']):
-        topology = load_psf(top, **kwargs)
-    elif isinstance(top, string_types) and (ext in ['.mol2']):
-        topology = load_mol2(top, **kwargs).topology
-    elif isinstance(top, string_types) and (ext in ['.gro']):
-        topology = load_gro(top, **kwargs).topology
-    elif isinstance(top, string_types) and (ext in ['.arc']):
-        topology = load_arc(top, **kwargs).topology
-    elif isinstance(top, string_types) and (ext in ['.hoomdxml']):
-        topology = load_hoomdxml(top, **kwargs).topology
-    elif isinstance(top, string_types) and (ext in ['.gsd']):
-        topology = load_gsd_topology(top, **kwargs)
+    if isinstance(top, Topology):
+        topology = top
     elif isinstance(top, Trajectory):
         topology = top.topology
-    elif isinstance(top, Topology):
-        topology = top
-    elif isinstance(top, string_types):
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.pdb', '.pdb.gz', '.h5','.lh5']):
+        _traj = load_frame(top, 0, **kwargs)
+        topology = _traj.topology
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.prmtop', '.parm7', '.prm7']):
+        topology = load_prmtop(top, **kwargs)
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.psf']):
+        topology = load_psf(top, **kwargs)
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.mol2']):
+        topology = load_mol2(top, **kwargs).topology
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.gro']):
+        topology = load_gro(top, **kwargs).topology
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.arc']):
+        topology = load_arc(top, **kwargs).topology
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.hoomdxml']):
+        topology = load_hoomdxml(top, **kwargs).topology
+    elif isinstance(top, (string_types, os.PathLike)) and (ext in ['.gsd']):
+        topology = load_gsd_topology(top, **kwargs)
+    elif isinstance(top, (string_types, os.PathLike)):
         raise IOError('The topology is loaded by filename extension, and the '
                       'detected "%s" format is not supported. Supported topology '
                       'formats include %s and "%s".' % (
@@ -220,7 +220,7 @@ def open(filename, mode='r', force_overwrite=True, **kwargs):
 
     Parameters
     ----------
-    filename : str
+    filename : path-like
         Path to the trajectory file on disk
     mode : {'r', 'w'}
         The mode in which to open the file, either 'r' for read or 'w' for
@@ -263,7 +263,7 @@ def load_frame(filename, index, top=None, atom_indices=None, **kwargs):
 
     Parameters
     ----------
-    filename : str
+    filename : path-like
         Path to the trajectory file on disk
     index : int
         Load the `index`-th frame from the specified file
@@ -324,7 +324,7 @@ def load(filename_or_filenames, discard_overlapping_frames=False, **kwargs):
 
     Parameters
     ----------
-    filename_or_filenames : {str, list of strings}
+    filename_or_filenames : {path-like, list of path-like objects}
         Filename or list of filenames containing trajectory files of a single format.
     discard_overlapping_frames : bool, default=False
         Look for overlapping frames between the last frame of one filename and
@@ -332,7 +332,7 @@ def load(filename_or_filenames, discard_overlapping_frames=False, **kwargs):
 
     Other Parameters
     ----------------
-    top : {str, Trajectory, Topology}
+    top : {path-like, Trajectory, Topology}
         Most trajectory formats do not contain topology information. Pass in
         either the path to a RCSB PDB file, a trajectory, or a topology to
         supply this information. This option is not required for the .h5, .lh5,
@@ -359,7 +359,7 @@ def load(filename_or_filenames, discard_overlapping_frames=False, **kwargs):
     >>> print traj2
     <mdtraj.Trajectory with 250 frames, 423 atoms at 0x11136e410>
 
-    >>> traj3 = md.load_hdf5('output.xtc', atom_indices=[0,1] top='topology.pdb')
+    >>> traj3 = md.load_hdf5('output.xtc', atom_indices=[0,1], top='topology.pdb')
     >>> print traj3
     <mdtraj.Trajectory with 500 frames, 2 atoms at 0x18236e4a0>
 
@@ -369,69 +369,127 @@ def load(filename_or_filenames, discard_overlapping_frames=False, **kwargs):
         The resulting trajectory, as an md.Trajectory object.
     """
 
-    if "top" in kwargs:  # If applicable, pre-loads the topology from PDB for major performance boost.
-        topkwargs = kwargs.copy()
-        topkwargs.pop("top", None)
-        topkwargs.pop("atom_indices", None)
-        topkwargs.pop("frame", None)
-        kwargs["top"] = _parse_topology(kwargs["top"], **topkwargs)
+    # If a single filename make a list out of it in
+    #order to have an easier function later on
+    if isinstance(filename_or_filenames, (string_types, os.PathLike)):
+        filename_or_filenames = [filename_or_filenames]
+    
+    
+    extensions = [_get_extension(f) for f in filename_or_filenames]
+    extension = extensions[0]
+    #Make the needed checks
+    if len(set(extensions)) == 0:
+        raise ValueError('No trajectories specified. '
+                            'filename_or_filenames was an empty list')
+    elif len(set(extensions)) > 1:
+        raise TypeError("Each filename must have the same extension. "
+                        "Received: %s" % ', '.join(set(extensions)))
 
-    # grab the extension of the filename
-    if isinstance(filename_or_filenames, string_types):  # If a single filename
-        extension = _get_extension(filename_or_filenames)
-        filename = filename_or_filenames
-    else:  # If multiple filenames, take the first one.
-        extensions = [_get_extension(f) for f in filename_or_filenames]
-        if len(set(extensions)) == 0:
-            raise ValueError('No trajectories specified. '
-                             'filename_or_filenames was an empty list')
-        elif len(set(extensions)) > 1:
-            raise TypeError("Each filename must have the same extension. "
-                            "Received: %s" % ', '.join(set(extensions)))
-        else:
-            # we know the topology is equal because we sent the same topology
-            # kwarg in. Therefore, we explictly throw away the topology on all
-            # but the first trajectory and use check_topology=False on the join.
-            # Throwing the topology away explictly allows a large number of pdb
-            # files to be read in without using ridiculous amounts of memory.
-            trajectories = []
-            for (i, f) in enumerate(filename_or_filenames):
-                t = load(f, **kwargs)
-                if i != 0:
-                    t.topology = None
-                trajectories.append(t)
-            return join(trajectories, check_topology=False,
-                        discard_overlapping_frames=discard_overlapping_frames)
+    #pre-loads the topology from PDB for major performance boost.
+    topkwargs = kwargs.copy()
+    #if top is not given try with one of the trajectory files
+    topkwargs.pop("top", None)
+    topkwargs.pop("atom_indices", None)
+    topkwargs.pop("frame", None)
+    topkwargs.pop("stride", None)
+    topkwargs.pop("start", None)
+    kwargs["top"] = _parse_topology(kwargs.get("top", filename_or_filenames[0]), **topkwargs)
 
+    #get the right loader
     try:
         #loader = _LoaderRegistry[extension][0]
         loader = FormatRegistry.loaders[extension]
     except KeyError:
         raise IOError('Sorry, no loader for filename=%s (extension=%s) '
-                      'was found. I can only load files '
-                      'with extensions in %s' % (filename, extension, FormatRegistry.loaders.keys()))
+                    'was found. I can only load files '
+                    'with extensions in %s' % (
+                        filename_or_filenames[0], extension, FormatRegistry.loaders.keys()))
 
-    if extension in _TOPOLOGY_EXTS:
+    if loader.__name__ not in ['load_dtr']:
+            _assert_files_exist(filename_or_filenames)
+    else:
+        _assert_files_or_dirs_exist(filename_or_filenames)
+
+
+    if extension not in _TOPOLOGY_EXTS:
+        # standard_names is a valid keyword argument only for files containing topologies
+        kwargs.pop('standard_names', None)
+
+    trajectories = []
+    tmp_file = filename_or_filenames[0]
+    filename_or_filenames = filename_or_filenames[1:]  # ignore first file
+    try:
         # this is a little hack that makes calling load() more predictable. since
         # most of the loaders take a kwargs "top" except for load_hdf5, (since
         # it saves the topology inside the file), we often end up calling
         # load_hdf5 via this function with the top kwarg specified. but then
         # there would be a signature binding error. it's easier just to ignore
         # it.
-        if 'top' in kwargs:
-            warnings.warn('top= kwarg ignored since file contains topology information')
-            kwargs.pop('top', None)
-    else:
-        # standard_names is a valid keyword argument only for files containing topologies
-        kwargs.pop('standard_names', None)
+        #TODO make all the loaders accept a pre parsed topology (top) in order to avoid
+        #this part and have a more consistent interface and a faster load function
+        t = loader(tmp_file, **kwargs)
+        
+    except TypeError as e:
 
-    if loader.__name__ not in ['load_dtr']:
-        _assert_files_exist(filename_or_filenames)
-    else:
-        _assert_files_or_dirs_exist(filename_or_filenames)
+        #Don't want to intercept legit
+        #TypeErrors
+        if "got an unexpected keyword argument 'top'" not in str(e):
+            raise
 
-    value = loader(filename, **kwargs)
-    return value
+        warnings.warn('top= kwargs ignored since this file parser does not support it')
+
+        kwargs.pop('top', None)
+
+        t = loader(tmp_file, **kwargs)
+
+    except ValueError as e:
+
+        if 'xyz must be shape' in str(e):
+
+            raise ValueError('The topology and the trajectory files might not contain the same atoms\n'
+            'The input topology must contain all atoms even if '
+            'you want to select a subset of them with atom_indices'
+            ) from e
+
+        raise
+
+    trajectories.append(t)
+
+    # Only do this monkey patching if needed in order not to
+    # modify the output topology
+    if ('top' in kwargs) and (
+        kwargs.get('atom_indices', None) is not None) and (
+        len(filename_or_filenames) > 0):
+
+        # In case only a part of the atoms were selected
+        # I get the right topology that
+        # kwargs['top'].subset shall return
+        subset_topology = trajectories[0].topology
+
+        # Little monkey-patch to prevent further subsetting Topologies
+        # this modified version of the topology will never exit this function
+        kwargs['top'].subset = lambda atom_indices : subset_topology
+        
+
+
+    # We know the topology is equal because we send the same topology
+    # kwarg in. Therefore, we explictly throw away the topology on all
+    # but the first trajectory by making them all point to None
+    #  and use check_topology=False on the join.
+    # Throwing the topology away explictly allows a large number of pdb
+    # files to be read in without using ridiculous amounts of memory.
+    for f in filename_or_filenames:
+        t = loader(f, **kwargs)
+        
+        t.topology = None
+        trajectories.append(t)
+
+
+    if len(trajectories) == 1: #if only one file was given there is nothing to join
+        return trajectories[0]
+
+    return join(trajectories, check_topology=False,
+                discard_overlapping_frames=discard_overlapping_frames)
 
 
 def iterload(filename, chunk=100, **kwargs):
@@ -442,7 +500,7 @@ def iterload(filename, chunk=100, **kwargs):
 
     Parameters
     ----------
-    filename : str
+    filename : path-like
         Path to the trajectory file on disk
     chunk : int
         Number of frames to load at once from disk per iteration.  If 0, load all.
@@ -1258,8 +1316,8 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filenames : {str, [str]}
-            Either a string or list of strings
+        filenames : {path-like, [path-like]}
+            Either a path or list of paths
 
         Other Parameters
         ----------------
@@ -1298,7 +1356,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory. The extension will
             be parsed and will control the format.
 
@@ -1330,7 +1388,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
@@ -1347,7 +1405,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
@@ -1362,7 +1420,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
@@ -1376,7 +1434,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
@@ -1423,12 +1481,12 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
         """
-        with XTCTrajectoryFile(filename, 'w', force_overwrite=force_overwrite) as f:
+        with XTCTrajectoryFile(os.fspath(filename), 'w', force_overwrite=force_overwrite) as f:
             f.write(xyz=in_units_of(self.xyz, Trajectory._distance_unit, f.distance_unit),
                     time=self.time,
                     box=in_units_of(self.unitcell_vectors, Trajectory._distance_unit, f.distance_unit))
@@ -1443,12 +1501,12 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
         """
-        with TRRTrajectoryFile(filename, 'w', force_overwrite=force_overwrite) as f:
+        with TRRTrajectoryFile(os.fspath(filename), 'w', force_overwrite=force_overwrite) as f:
             f.write(xyz=in_units_of(self.xyz, Trajectory._distance_unit, f.distance_unit),
                     time=self.time,
                     box=in_units_of(self.unitcell_vectors, Trajectory._distance_unit, f.distance_unit))
@@ -1458,13 +1516,13 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filenames, if its already there
         """
         self._check_valid_unitcell()
-        with DCDTrajectoryFile(filename, 'w', force_overwrite=force_overwrite) as f:
+        with DCDTrajectoryFile(os.fspath(filename), 'w', force_overwrite=force_overwrite) as f:
             f.write(xyz=in_units_of(self.xyz, Trajectory._distance_unit, f.distance_unit),
                     cell_lengths=in_units_of(self.unitcell_lengths, Trajectory._distance_unit, f.distance_unit),
                     cell_angles=self.unitcell_angles)
@@ -1474,13 +1532,13 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filenames, if its already there
         """
         self._check_valid_unitcell()
-        with DTRTrajectoryFile(filename, 'w', force_overwrite=force_overwrite) as f:
+        with DTRTrajectoryFile(os.fspath(filename), 'w', force_overwrite=force_overwrite) as f:
             f.write(xyz=in_units_of(self.xyz, Trajectory._distance_unit, f.distance_unit),
                     cell_lengths=in_units_of(self.unitcell_lengths, Trajectory._distance_unit, f.distance_unit),
                     cell_angles=self.unitcell_angles,
@@ -1491,12 +1549,12 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
         """
-        with BINPOSTrajectoryFile(filename, 'w', force_overwrite=force_overwrite) as f:
+        with BINPOSTrajectoryFile(os.fspath(filename), 'w', force_overwrite=force_overwrite) as f:
             f.write(in_units_of(self.xyz, Trajectory._distance_unit, f.distance_unit))
 
 
@@ -1505,7 +1563,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
@@ -1526,7 +1584,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if it's already there
@@ -1543,7 +1601,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the restart
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if it's already there
@@ -1580,7 +1638,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the restart
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if it's already there
@@ -1617,7 +1675,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if it's already there
@@ -1631,7 +1689,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             Path to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at that filename if it exists
@@ -1648,13 +1706,13 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filename, if its already there
         """
         self._check_valid_unitcell()
-        with TNGTrajectoryFile(filename, 'w', force_overwrite=force_overwrite) as f:
+        with TNGTrajectoryFile(os.fspath(filename), 'w', force_overwrite=force_overwrite) as f:
             f.write(self.xyz, time=self.time, box=self.unitcell_vectors)
 
     def save_gsd(self, filename, force_overwrite=True):
@@ -1662,7 +1720,7 @@ class Trajectory(object):
 
         Parameters
         ----------
-        filename : str
+        filename : path-like
             filesystem path in which to save the trajectory
         force_overwrite : bool, default=True
             Overwrite anything that exists at filenames, if its already there

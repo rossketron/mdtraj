@@ -3,11 +3,61 @@ What's New?
 
 These are new features and improvements of note in each release.
 
-Unreleased
-----------
+Development
+-----------
+
+
+v1.9.7 (November 12, 2021)
+-----------------------
+
+ - Replace discourse link with gitter link (904338b799842c103dcb9e306e6878a739a4d39f)
+ - Faster load function and more homogeneus file parser interface (#1648)
+ - Reduce memory usage of ``rdf_t`` (#1661)
+ - Update to new OpenMM namespace (#1668)
+ - Fix ``compute_contact`` bug with glycine sidechains (#1674)
+ - Fix errors in RMSF documentation (#1676)
+ - Handle path-like objects in place of filenames (#1680)
+ - Pin NumPy in pyproject.toml for Python 3.10 (#1681)
+ - Fix compilation errors on M1 Macs (#1684)
+ - Update Python versions in CI (#1686)
+ - Fix jupyter runners in CI (#1687)
+
+A total of 10 people contributed to this release.
+People with a "+" by their names contributed a patch for the first time.
+
+- Robert T. McGibbon
+- Sander Roet
+- Charlie Laughton +
+- Alexander Matthew Payne +
+- Tucker Burgin +
+- Maurice Karrenbrock
+- Luca Naef +
+- Jacob Lumpkins +
+- Ray A. Matsumoto
+- Matthew W. Thompson
+
+
+v1.9.6 (April 20, 2021)
+-----------------------
  - Fix compatibility with all versions of astunparse (03753d736e30f15f8f210434e689e9ff664bb611)
  - Rework CI to be simpler and more maintainable
  - Fix deployment of the documentation to the website
+ - Don't use serials for more than 1 chain (#1612)
+ - Added ``enforcePeriodicBox`` option for HDF5Reporter (#1622)
+ - Add time-dependent distance and RDF functions (#1633)
+ - Add ``select`` option to ``compute_center_of_mass()`` (#1640)
+ - ``Topology.join()`` can optionally updates resSeq of new residues (#1639)
+
+A total of 7 people contributed to this release.
+People with a "+" by their names contributed a patch for the first time.
+
+- Robert T. McGibbon
+- Sander Roet
+- Ray A. Matsumoto
+- Maurice Karrenbrock +
+- Kirill Shmilovich
+- Heyi Liang +
+- Matthew W. Thompson
 
 
 v1.9.5 (Jan 4, 2021)

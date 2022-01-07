@@ -86,7 +86,7 @@ class CompilerDetection(object):
         if self.msvc:
             self.compiler_args_opt = ['/O2']
         else:
-            self.compiler_args_opt = ['-O3', '-funroll-loops']
+            self.compiler_args_opt = ['-O3', '-funroll-loops', '--std=c++11']
         print()
         self._is_initialized = True
 
